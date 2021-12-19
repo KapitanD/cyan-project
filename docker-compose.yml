@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  user-db:
+    image: "postgres:14.1-alpine"
+    restart: always
+    environment:
+      POSTGRES_USER: cyan-user
+      POSTGRES_PASSWORD: cyan-password
+      POSTGRES_DB: cyan-users
+    volumes:
+      - data/user-db:/var/lib/postgresql/data

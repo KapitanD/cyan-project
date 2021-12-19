@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package cyan;
+
+option go_package="github.com/KapitanD/cyan-project/cyan-api/proto/v1";
+
+import "cyan-api/api/v1/user-service.proto";
+
+service ContainerService {
+	rpc CreateContainer(ContainerCreateRequest) returns (ContainerCreateResponse) {}
+	rpc GetContainers(ContainerGetRequest) returns (ContainerGetResponse) {}
+	rpc UpdateContainer(ContainerUpdateRequest) returns (ContainerUpdateResponse) {}
+	rpc DeleteContainer(ContainerDeleteRequest) returns (ContainerDeleteResponse) {}
+}
+
+message ContainerCreateRequest {
+	UserIdentity user_id = 1;
+	string name = 2;
+	Container parent = 3;
+	Meta meta_data = 4;
+}
+
+message ContainerGetRequest {
+	UserIdentity user_id = 1;
+	string path = 2;
+	int32 max_depth = 3;
+}
+
+message ContainerUpdateRequest {
+	UserIdentity user_id = 1;
+	string path = 2;
+	string new_name = 3;
+	Meta new_meta = 4;
+}
+
+message ContainerDeleteRequest {
+	UserIdentity user_id = 1;
+	string path = 2;
+}
+
+message ContainerCreateResponse {
+	bool created = 1;
+	Container container = 2;
+}
+
+message ContainerGetResponse {
+	Container container = 1;
+	repeated Container inners = 2;
+}
+
+message ContainerUpdateResponse {
+	bool updated = 1;
+	Container container = 2;
+}
+
+message ContainerDeleteResponse {
+	bool deleted = 1;
+}
+
+message Container {
+	string path = 1;
+	string name = 2;
+	Meta meta_data = 3;
+}
+
+message Meta {
+	map<string, string> meta = 1;
+}
