@@ -1,27 +1,39 @@
 package teststore
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/KapitanD/cyan-project/pkg/model"
+)
 
 type UserRepository struct {
 	store *Store
-	users map[string]string
+	users map[string]*model.User
 }
 
-func (ur *UserRepository) CreateUser(login, password string) error {
-	_, ok := ur.users[login]
+func (ur *UserRepository) CreateUser(user *model.User) error {
+	if err := user.Validate(); err != nil {
+		return err
+	}
+
+	if err := user.BeforeCreate(); err != nil {
+		return err
+	}
+
+	_, ok := ur.users[user.Email]
 	if ok {
 		return errors.New("user already exist")
 	}
 
-	ur.users[login] = password
+	ur.users[user.Email] = user
 	return nil
 }
 
-func (ur *UserRepository) FindByLoginAndPassword(login, password string) bool {
-	realPassword, ok := ur.users[login]
+func (ur *UserRepository) FindByEmail(email string) (*model.User, error) {
+	_, ok := ur.users[email]
 	if ok {
-		return realPassword == password
+		return ur.users[email], nil
 	} else {
-		return false
+		return nil, errors.New("user do not exists")
 	}
 }

@@ -2,34 +2,53 @@ syntax = "proto3";
 
 package cyan;
 
-option go_package="github.com/KapitanD/cyan-project/cyan-api/proto/v1";
+option go_package="cyan-api/proto/v1";
 
 service UserService {
 	rpc CreateUser(CreateRequest) returns (CreateResponse) {}
-	rpc LoginUser(LoginRequest) returns (LoginResponse) {}
+	rpc AuthenticateUser(AuthenticateRequest) returns (AuthenticateResponse) {}
+	rpc AuthorizeUser(AuthorizeRequest) returns (AuthorizeResponse) {}
+	rpc RefreshToken(RefreshRequest) returns (RefreshResponse) {}
 }
 
 message CreateRequest {
-	string login = 1;
+	string email = 1;
 	string password = 2;
-	string repeat_password = 3;
 }
 
 message CreateResponse {
-	UserIdentity user_id = 1;
+	UserIdentity user = 1;
 	bool created = 2;
 }
 
-message LoginRequest {
-	string login = 1;
+message AuthenticateRequest {
+	string email = 1;
 	string password = 2;
 }
 
-message LoginResponse {
+message AuthenticateResponse {
 	string token = 1;
 	string refresh_token = 2;
 }
 
+message AuthorizeRequest {
+	string token = 1;
+}
+
+message AuthorizeResponse {
+	UserIdentity user = 1;
+}
+
+message RefreshRequest {
+	string old_token = 1;
+	string refresh_token = 2;
+}
+
+message RefreshResponse {
+	string new_token = 1;
+}
+
 message UserIdentity {
 	string user_id = 1;
+	string email =2;
 }

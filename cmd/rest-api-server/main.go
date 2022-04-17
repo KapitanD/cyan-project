@@ -15,8 +15,9 @@ import (
 
 func main() {
 	config := &config.RestAPIConfig{
-		Endpoint: "localhost",
-		Port:     "8080",
+		Endpoint:            "localhost",
+		Port:                "8080",
+		UserServiceEndpoint: "localhost:10051",
 	}
 
 	server, err := apiserver.Create(config)

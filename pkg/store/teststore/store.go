@@ -1,6 +1,7 @@
 package teststore
 
 import (
+	"github.com/KapitanD/cyan-project/pkg/model"
 	"github.com/KapitanD/cyan-project/pkg/store"
 )
 
@@ -19,7 +20,7 @@ func (s *Store) User() store.UserRepository {
 
 	s.userRepository = &UserRepository{
 		store: s,
-		users: make(map[string]string),
+		users: make(map[string]*model.User),
 	}
 
 	return s.userRepository

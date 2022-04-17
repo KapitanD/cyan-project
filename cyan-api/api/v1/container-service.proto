@@ -2,9 +2,7 @@ syntax = "proto3";
 
 package cyan;
 
-option go_package="github.com/KapitanD/cyan-project/cyan-api/proto/v1";
-
-import "cyan-api/api/v1/user-service.proto";
+option go_package="cyan-api/proto/v1";
 
 service ContainerService {
 	rpc CreateContainer(ContainerCreateRequest) returns (ContainerCreateResponse) {}
@@ -14,27 +12,23 @@ service ContainerService {
 }
 
 message ContainerCreateRequest {
-	UserIdentity user_id = 1;
 	string name = 2;
 	Container parent = 3;
 	Meta meta_data = 4;
 }
 
 message ContainerGetRequest {
-	UserIdentity user_id = 1;
 	string path = 2;
 	int32 max_depth = 3;
 }
 
 message ContainerUpdateRequest {
-	UserIdentity user_id = 1;
 	string path = 2;
 	string new_name = 3;
 	Meta new_meta = 4;
 }
 
 message ContainerDeleteRequest {
-	UserIdentity user_id = 1;
 	string path = 2;
 }
 
