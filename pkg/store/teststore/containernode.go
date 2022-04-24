@@ -2,7 +2,6 @@ package teststore
 
 import (
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/KapitanD/cyan-project/pkg/model"
@@ -29,7 +28,6 @@ func newTree() *containerNode {
 }
 
 func (node *containerNode) getByPath(path string) (*containerNode, error) {
-	log.Printf("node: %v", node)
 	pathSlice := strings.Split(path, "/")
 	curNode := node
 
