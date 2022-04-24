@@ -7,7 +7,7 @@ import (
 )
 
 func Create(conf *config.RestAPIConfig) (*http.Server, error) {
-	s, err := newRESTAPIServer(conf.UserServiceEndpoint)
+	s, err := newRESTAPIServer(conf.UserServiceEndpoint, conf.ContainerServiceEndpoint)
 	if err != nil {
 		return nil, err
 	}

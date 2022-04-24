@@ -7,6 +7,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -18,10 +19,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ContainerServiceClient interface {
+	CreateRootContainer(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ContainerRootResponse, error)
 	CreateContainer(ctx context.Context, in *ContainerCreateRequest, opts ...grpc.CallOption) (*ContainerCreateResponse, error)
-	GetContainers(ctx context.Context, in *ContainerGetRequest, opts ...grpc.CallOption) (*ContainerGetResponse, error)
-	UpdateContainer(ctx context.Context, in *ContainerUpdateRequest, opts ...grpc.CallOption) (*ContainerUpdateResponse, error)
-	DeleteContainer(ctx context.Context, in *ContainerDeleteRequest, opts ...grpc.CallOption) (*ContainerDeleteResponse, error)
+	GetContainer(ctx context.Context, in *ContainerGetRequest, opts ...grpc.CallOption) (*ContainerGetResponse, error)
+	GetInners(ctx context.Context, in *ContainerGetRequest, opts ...grpc.CallOption) (*ContainerInnersResponse, error)
 }
 
 type containerServiceClient struct {
@@ -30,6 +31,15 @@ type containerServiceClient struct {
 
 func NewContainerServiceClient(cc grpc.ClientConnInterface) ContainerServiceClient {
 	return &containerServiceClient{cc}
+}
+
+func (c *containerServiceClient) CreateRootContainer(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ContainerRootResponse, error) {
+	out := new(ContainerRootResponse)
+	err := c.cc.Invoke(ctx, "/cyan.ContainerService/CreateRootContainer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *containerServiceClient) CreateContainer(ctx context.Context, in *ContainerCreateRequest, opts ...grpc.CallOption) (*ContainerCreateResponse, error) {
@@ -41,27 +51,18 @@ func (c *containerServiceClient) CreateContainer(ctx context.Context, in *Contai
 	return out, nil
 }
 
-func (c *containerServiceClient) GetContainers(ctx context.Context, in *ContainerGetRequest, opts ...grpc.CallOption) (*ContainerGetResponse, error) {
+func (c *containerServiceClient) GetContainer(ctx context.Context, in *ContainerGetRequest, opts ...grpc.CallOption) (*ContainerGetResponse, error) {
 	out := new(ContainerGetResponse)
-	err := c.cc.Invoke(ctx, "/cyan.ContainerService/GetContainers", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cyan.ContainerService/GetContainer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *containerServiceClient) UpdateContainer(ctx context.Context, in *ContainerUpdateRequest, opts ...grpc.CallOption) (*ContainerUpdateResponse, error) {
-	out := new(ContainerUpdateResponse)
-	err := c.cc.Invoke(ctx, "/cyan.ContainerService/UpdateContainer", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *containerServiceClient) DeleteContainer(ctx context.Context, in *ContainerDeleteRequest, opts ...grpc.CallOption) (*ContainerDeleteResponse, error) {
-	out := new(ContainerDeleteResponse)
-	err := c.cc.Invoke(ctx, "/cyan.ContainerService/DeleteContainer", in, out, opts...)
+func (c *containerServiceClient) GetInners(ctx context.Context, in *ContainerGetRequest, opts ...grpc.CallOption) (*ContainerInnersResponse, error) {
+	out := new(ContainerInnersResponse)
+	err := c.cc.Invoke(ctx, "/cyan.ContainerService/GetInners", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,10 +73,10 @@ func (c *containerServiceClient) DeleteContainer(ctx context.Context, in *Contai
 // All implementations must embed UnimplementedContainerServiceServer
 // for forward compatibility
 type ContainerServiceServer interface {
+	CreateRootContainer(context.Context, *emptypb.Empty) (*ContainerRootResponse, error)
 	CreateContainer(context.Context, *ContainerCreateRequest) (*ContainerCreateResponse, error)
-	GetContainers(context.Context, *ContainerGetRequest) (*ContainerGetResponse, error)
-	UpdateContainer(context.Context, *ContainerUpdateRequest) (*ContainerUpdateResponse, error)
-	DeleteContainer(context.Context, *ContainerDeleteRequest) (*ContainerDeleteResponse, error)
+	GetContainer(context.Context, *ContainerGetRequest) (*ContainerGetResponse, error)
+	GetInners(context.Context, *ContainerGetRequest) (*ContainerInnersResponse, error)
 	mustEmbedUnimplementedContainerServiceServer()
 }
 
@@ -83,17 +84,17 @@ type ContainerServiceServer interface {
 type UnimplementedContainerServiceServer struct {
 }
 
+func (UnimplementedContainerServiceServer) CreateRootContainer(context.Context, *emptypb.Empty) (*ContainerRootResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRootContainer not implemented")
+}
 func (UnimplementedContainerServiceServer) CreateContainer(context.Context, *ContainerCreateRequest) (*ContainerCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateContainer not implemented")
 }
-func (UnimplementedContainerServiceServer) GetContainers(context.Context, *ContainerGetRequest) (*ContainerGetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetContainers not implemented")
+func (UnimplementedContainerServiceServer) GetContainer(context.Context, *ContainerGetRequest) (*ContainerGetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContainer not implemented")
 }
-func (UnimplementedContainerServiceServer) UpdateContainer(context.Context, *ContainerUpdateRequest) (*ContainerUpdateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateContainer not implemented")
-}
-func (UnimplementedContainerServiceServer) DeleteContainer(context.Context, *ContainerDeleteRequest) (*ContainerDeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteContainer not implemented")
+func (UnimplementedContainerServiceServer) GetInners(context.Context, *ContainerGetRequest) (*ContainerInnersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInners not implemented")
 }
 func (UnimplementedContainerServiceServer) mustEmbedUnimplementedContainerServiceServer() {}
 
@@ -106,6 +107,24 @@ type UnsafeContainerServiceServer interface {
 
 func RegisterContainerServiceServer(s grpc.ServiceRegistrar, srv ContainerServiceServer) {
 	s.RegisterService(&ContainerService_ServiceDesc, srv)
+}
+
+func _ContainerService_CreateRootContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContainerServiceServer).CreateRootContainer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cyan.ContainerService/CreateRootContainer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContainerServiceServer).CreateRootContainer(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ContainerService_CreateContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -126,56 +145,38 @@ func _ContainerService_CreateContainer_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContainerService_GetContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ContainerService_GetContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ContainerGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContainerServiceServer).GetContainers(ctx, in)
+		return srv.(ContainerServiceServer).GetContainer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cyan.ContainerService/GetContainers",
+		FullMethod: "/cyan.ContainerService/GetContainer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerServiceServer).GetContainers(ctx, req.(*ContainerGetRequest))
+		return srv.(ContainerServiceServer).GetContainer(ctx, req.(*ContainerGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ContainerService_UpdateContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerUpdateRequest)
+func _ContainerService_GetInners_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ContainerGetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ContainerServiceServer).UpdateContainer(ctx, in)
+		return srv.(ContainerServiceServer).GetInners(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cyan.ContainerService/UpdateContainer",
+		FullMethod: "/cyan.ContainerService/GetInners",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerServiceServer).UpdateContainer(ctx, req.(*ContainerUpdateRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ContainerService_DeleteContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerDeleteRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContainerServiceServer).DeleteContainer(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/cyan.ContainerService/DeleteContainer",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerServiceServer).DeleteContainer(ctx, req.(*ContainerDeleteRequest))
+		return srv.(ContainerServiceServer).GetInners(ctx, req.(*ContainerGetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,20 +189,20 @@ var ContainerService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ContainerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreateRootContainer",
+			Handler:    _ContainerService_CreateRootContainer_Handler,
+		},
+		{
 			MethodName: "CreateContainer",
 			Handler:    _ContainerService_CreateContainer_Handler,
 		},
 		{
-			MethodName: "GetContainers",
-			Handler:    _ContainerService_GetContainers_Handler,
+			MethodName: "GetContainer",
+			Handler:    _ContainerService_GetContainer_Handler,
 		},
 		{
-			MethodName: "UpdateContainer",
-			Handler:    _ContainerService_UpdateContainer_Handler,
-		},
-		{
-			MethodName: "DeleteContainer",
-			Handler:    _ContainerService_DeleteContainer_Handler,
+			MethodName: "GetInners",
+			Handler:    _ContainerService_GetInners_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

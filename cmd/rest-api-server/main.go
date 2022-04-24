@@ -15,9 +15,10 @@ import (
 
 func main() {
 	config := &config.RestAPIConfig{
-		Endpoint:            "localhost",
-		Port:                "8080",
-		UserServiceEndpoint: "localhost:10051",
+		Endpoint:                 "localhost",
+		Port:                     "8080",
+		UserServiceEndpoint:      "localhost:10051",
+		ContainerServiceEndpoint: "localhost:10052",
 	}
 
 	server, err := apiserver.Create(config)
@@ -36,7 +37,7 @@ func main() {
 		// We received an interrupt signal, shut down.
 		if err := server.Shutdown(context.Background()); err != nil {
 			// Error from closing listeners, or context timeout:
-			log.Err(err).Msgf("HTTP server Shutdown")
+			log.Err(err).Msg("HTTP server Shutdown")
 		}
 		log.Info().Msg("server gracefully shutdown")
 		close(idleConsClosed)

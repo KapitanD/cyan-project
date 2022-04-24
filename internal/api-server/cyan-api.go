@@ -10,19 +10,26 @@ import (
 )
 
 type apiserver struct {
-	router      *mux.Router
-	userService v1.UserServiceClient
+	router           *mux.Router
+	userService      v1.UserServiceClient
+	containerService v1.ContainerServiceClient
 }
 
-func newRESTAPIServer(userServerEndpoint string) (*apiserver, error) {
-	conn, err := grpc.Dial(userServerEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func newRESTAPIServer(userServerEndpoint, containerServerEndpoint string) (*apiserver, error) {
+	userConn, err := grpc.Dial(userServerEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+
+	containerConn, err := grpc.Dial(containerServerEndpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}
 
 	srv := &apiserver{
-		router:      mux.NewRouter(),
-		userService: v1.NewUserServiceClient(conn),
+		router:           mux.NewRouter(),
+		userService:      v1.NewUserServiceClient(userConn),
+		containerService: v1.NewContainerServiceClient(containerConn),
 	}
 
 	srv.configureRouter()
