@@ -7,6 +7,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -18,10 +19,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	CreateUser(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	AuthenticateUser(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
-	AuthorizeUser(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error)
-	RefreshToken(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshResponse, error)
+	CreateUserTry(ctx context.Context, in *UserCreateReq, opts ...grpc.CallOption) (*Commit, error)
+	CreateUserCommit(ctx context.Context, in *Commit, opts ...grpc.CallOption) (*UserCreateResp, error)
+	CreateUserCancel(ctx context.Context, in *Commit, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AuthenticateUser(ctx context.Context, in *AuthenticateReq, opts ...grpc.CallOption) (*AuthenticateResp, error)
+	AuthorizeUser(ctx context.Context, in *AuthorizeReq, opts ...grpc.CallOption) (*AuthorizeResp, error)
+	RefreshToken(ctx context.Context, in *RefreshReq, opts ...grpc.CallOption) (*RefreshResp, error)
 }
 
 type userServiceClient struct {
@@ -32,17 +35,35 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) CreateUser(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
-	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, "/cyan.UserService/CreateUser", in, out, opts...)
+func (c *userServiceClient) CreateUserTry(ctx context.Context, in *UserCreateReq, opts ...grpc.CallOption) (*Commit, error) {
+	out := new(Commit)
+	err := c.cc.Invoke(ctx, "/cyan.UserService/CreateUserTry", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) AuthenticateUser(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
-	out := new(AuthenticateResponse)
+func (c *userServiceClient) CreateUserCommit(ctx context.Context, in *Commit, opts ...grpc.CallOption) (*UserCreateResp, error) {
+	out := new(UserCreateResp)
+	err := c.cc.Invoke(ctx, "/cyan.UserService/CreateUserCommit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateUserCancel(ctx context.Context, in *Commit, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/cyan.UserService/CreateUserCancel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) AuthenticateUser(ctx context.Context, in *AuthenticateReq, opts ...grpc.CallOption) (*AuthenticateResp, error) {
+	out := new(AuthenticateResp)
 	err := c.cc.Invoke(ctx, "/cyan.UserService/AuthenticateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +71,8 @@ func (c *userServiceClient) AuthenticateUser(ctx context.Context, in *Authentica
 	return out, nil
 }
 
-func (c *userServiceClient) AuthorizeUser(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error) {
-	out := new(AuthorizeResponse)
+func (c *userServiceClient) AuthorizeUser(ctx context.Context, in *AuthorizeReq, opts ...grpc.CallOption) (*AuthorizeResp, error) {
+	out := new(AuthorizeResp)
 	err := c.cc.Invoke(ctx, "/cyan.UserService/AuthorizeUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -59,8 +80,8 @@ func (c *userServiceClient) AuthorizeUser(ctx context.Context, in *AuthorizeRequ
 	return out, nil
 }
 
-func (c *userServiceClient) RefreshToken(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshResponse, error) {
-	out := new(RefreshResponse)
+func (c *userServiceClient) RefreshToken(ctx context.Context, in *RefreshReq, opts ...grpc.CallOption) (*RefreshResp, error) {
+	out := new(RefreshResp)
 	err := c.cc.Invoke(ctx, "/cyan.UserService/RefreshToken", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,10 +93,12 @@ func (c *userServiceClient) RefreshToken(ctx context.Context, in *RefreshRequest
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	CreateUser(context.Context, *CreateRequest) (*CreateResponse, error)
-	AuthenticateUser(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
-	AuthorizeUser(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error)
-	RefreshToken(context.Context, *RefreshRequest) (*RefreshResponse, error)
+	CreateUserTry(context.Context, *UserCreateReq) (*Commit, error)
+	CreateUserCommit(context.Context, *Commit) (*UserCreateResp, error)
+	CreateUserCancel(context.Context, *Commit) (*emptypb.Empty, error)
+	AuthenticateUser(context.Context, *AuthenticateReq) (*AuthenticateResp, error)
+	AuthorizeUser(context.Context, *AuthorizeReq) (*AuthorizeResp, error)
+	RefreshToken(context.Context, *RefreshReq) (*RefreshResp, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -83,16 +106,22 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateRequest) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+func (UnimplementedUserServiceServer) CreateUserTry(context.Context, *UserCreateReq) (*Commit, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserTry not implemented")
 }
-func (UnimplementedUserServiceServer) AuthenticateUser(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error) {
+func (UnimplementedUserServiceServer) CreateUserCommit(context.Context, *Commit) (*UserCreateResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserCommit not implemented")
+}
+func (UnimplementedUserServiceServer) CreateUserCancel(context.Context, *Commit) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserCancel not implemented")
+}
+func (UnimplementedUserServiceServer) AuthenticateUser(context.Context, *AuthenticateReq) (*AuthenticateResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthenticateUser not implemented")
 }
-func (UnimplementedUserServiceServer) AuthorizeUser(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error) {
+func (UnimplementedUserServiceServer) AuthorizeUser(context.Context, *AuthorizeReq) (*AuthorizeResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthorizeUser not implemented")
 }
-func (UnimplementedUserServiceServer) RefreshToken(context.Context, *RefreshRequest) (*RefreshResponse, error) {
+func (UnimplementedUserServiceServer) RefreshToken(context.Context, *RefreshReq) (*RefreshResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -108,26 +137,62 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
 }
 
-func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _UserService_CreateUserTry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserCreateReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).CreateUser(ctx, in)
+		return srv.(UserServiceServer).CreateUserTry(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cyan.UserService/CreateUser",
+		FullMethod: "/cyan.UserService/CreateUserTry",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateUser(ctx, req.(*CreateRequest))
+		return srv.(UserServiceServer).CreateUserTry(ctx, req.(*UserCreateReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUserCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Commit)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUserCommit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cyan.UserService/CreateUserCommit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUserCommit(ctx, req.(*Commit))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateUserCancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Commit)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUserCancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cyan.UserService/CreateUserCancel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUserCancel(ctx, req.(*Commit))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_AuthenticateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthenticateRequest)
+	in := new(AuthenticateReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -139,13 +204,13 @@ func _UserService_AuthenticateUser_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/cyan.UserService/AuthenticateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).AuthenticateUser(ctx, req.(*AuthenticateRequest))
+		return srv.(UserServiceServer).AuthenticateUser(ctx, req.(*AuthenticateReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_AuthorizeUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthorizeRequest)
+	in := new(AuthorizeReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -157,13 +222,13 @@ func _UserService_AuthorizeUser_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/cyan.UserService/AuthorizeUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).AuthorizeUser(ctx, req.(*AuthorizeRequest))
+		return srv.(UserServiceServer).AuthorizeUser(ctx, req.(*AuthorizeReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RefreshRequest)
+	in := new(RefreshReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -175,7 +240,7 @@ func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/cyan.UserService/RefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).RefreshToken(ctx, req.(*RefreshRequest))
+		return srv.(UserServiceServer).RefreshToken(ctx, req.(*RefreshReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,8 +253,16 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateUser",
-			Handler:    _UserService_CreateUser_Handler,
+			MethodName: "CreateUserTry",
+			Handler:    _UserService_CreateUserTry_Handler,
+		},
+		{
+			MethodName: "CreateUserCommit",
+			Handler:    _UserService_CreateUserCommit_Handler,
+		},
+		{
+			MethodName: "CreateUserCancel",
+			Handler:    _UserService_CreateUserCancel_Handler,
 		},
 		{
 			MethodName: "AuthenticateUser",

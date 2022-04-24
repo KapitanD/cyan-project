@@ -1,10 +1,10 @@
 package user_service
 
 import (
-	"errors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/pkg/errors"
 
 	"github.com/KapitanD/cyan-project/pkg/model"
 )
@@ -35,6 +35,10 @@ func (srv *TokenService) Decode(token string) (*CustomClaims, error) {
 		return key, nil
 	})
 
+	if err != nil {
+		return nil, errors.Wrap(err, "error while parsing auth token")
+	}
+
 	// Validate the token and return the custom claims
 	if claims, ok := tokenType.Claims.(*CustomClaims); ok && tokenType.Valid {
 		return claims, nil
@@ -49,7 +53,7 @@ func (srv *TokenService) TokenPair(user *model.User) (map[string]string, error) 
 	claims := CustomClaims{
 		user,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(60 * time.Second).Unix(),
+			ExpiresAt: time.Now().Add(60 * time.Minute).Unix(),
 			Issuer:    "user.service",
 		},
 	}

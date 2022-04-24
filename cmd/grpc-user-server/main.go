@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -22,7 +23,9 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	v1.RegisterUserServiceServer(s, user_service.NewUserService())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	v1.RegisterUserServiceServer(s, user_service.NewUserService(ctx))
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

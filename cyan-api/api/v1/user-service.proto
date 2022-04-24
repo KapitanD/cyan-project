@@ -4,51 +4,58 @@ package cyan;
 
 option go_package="cyan-api/proto/v1";
 
+import "google/protobuf/empty.proto";
+
 service UserService {
-	rpc CreateUser(CreateRequest) returns (CreateResponse) {}
-	rpc AuthenticateUser(AuthenticateRequest) returns (AuthenticateResponse) {}
-	rpc AuthorizeUser(AuthorizeRequest) returns (AuthorizeResponse) {}
-	rpc RefreshToken(RefreshRequest) returns (RefreshResponse) {}
+	rpc CreateUserTry(UserCreateReq) returns (Commit) {}
+	rpc CreateUserCommit(Commit) returns (UserCreateResp) {}
+	rpc CreateUserCancel(Commit) returns (google.protobuf.Empty) {}
+	rpc AuthenticateUser(AuthenticateReq) returns (AuthenticateResp) {}
+	rpc AuthorizeUser(AuthorizeReq) returns (AuthorizeResp) {}
+	rpc RefreshToken(RefreshReq) returns (RefreshResp) {}
 }
 
-message CreateRequest {
+message UserCreateReq {
 	string email = 1;
 	string password = 2;
 }
 
-message CreateResponse {
-	UserIdentity user = 1;
-	bool created = 2;
+message UserCreateResp {
+	UserIdentity user_id = 1;
 }
 
-message AuthenticateRequest {
+message AuthenticateReq {
 	string email = 1;
 	string password = 2;
 }
 
-message AuthenticateResponse {
+message AuthenticateResp {
 	string token = 1;
 	string refresh_token = 2;
 }
 
-message AuthorizeRequest {
+message AuthorizeReq {
 	string token = 1;
 }
 
-message AuthorizeResponse {
+message AuthorizeResp {
 	UserIdentity user = 1;
 }
 
-message RefreshRequest {
+message RefreshReq {
 	string old_token = 1;
 	string refresh_token = 2;
 }
 
-message RefreshResponse {
+message RefreshResp {
 	string new_token = 1;
 }
 
 message UserIdentity {
 	string user_id = 1;
 	string email =2;
+}
+
+message Commit {
+	string commit_id = 1;
 }
