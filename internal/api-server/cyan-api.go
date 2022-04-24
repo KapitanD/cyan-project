@@ -43,6 +43,10 @@ func (s *apiserver) configureRouter() {
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
+	containers := s.router.PathPrefix("/containers").Subrouter()
+	containers.Use(s.tokenToContext)
+	containers.HandleFunc("/", s.handleCreateContainer()).Methods("POST")
+	containers.HandleFunc("/", s.handleGetContainer()).Methods("GET")
 }
 
 func (s *apiserver) ServeHTTP(w http.ResponseWriter, r *http.Request) {
