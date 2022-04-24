@@ -1,6 +1,7 @@
 package model
 
 import (
+	v1 "github.com/KapitanD/cyan-project/cyan-api/proto/v1"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
@@ -56,4 +57,18 @@ func encryptString(s string) (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func MarshallUser(userModel *User) *v1.UserIdentity {
+	return &v1.UserIdentity{
+		UserId: userModel.Id,
+		Email:  userModel.Email,
+	}
+}
+
+func UnmarshalUser(userIdentity *v1.UserIdentity) *User {
+	return &User{
+		Id:    userIdentity.UserId,
+		Email: userIdentity.Email,
+	}
 }
