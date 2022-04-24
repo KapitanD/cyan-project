@@ -1,0 +1,44 @@
+POST http://localhost:8080/register HTTP/1.1
+content-type: application/json
+
+{
+    "email" : "duneska1@mial.ru",
+    "password" : "hzhzhzhzh"
+}
+
+### Login
+
+POST http://localhost:8080/login HTTP/1.1
+content-type: application/json
+
+{
+    "email" : "duneska1@mial.ru",
+    "password" : "hzhzhzhzh"
+}
+
+### Container
+
+POST http://localhost:8080/containers/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyIjp7ImlkIjoiZjA1YmM1OTMtNjU4Mi00MDY1LTkwYTYtMWNkNDZhNzJjZjNkIiwiZW1haWwiOiJkdW5lc2thMUBtaWFsLnJ1IiwicGFzc3dvcmQiOiJoemh6aHpoemgifSwiZXhwIjoxNjUwODMyNzUwLCJpc3MiOiJ1c2VyLnNlcnZpY2UifQ.ofk2RRu0BwebsavAQjZFFatCK9OXiQFg048l-r_GCUg
+content-type: application/json
+
+{
+    "path" : "/sonne",
+    "container" : {
+        "name" : "sonne",
+        "is_leaf" : true,
+        "meta_data" : {
+            "key" : "val"
+        }
+    }
+}
+
+### Get container
+
+GET http://localhost:8080/containers/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyIjp7ImlkIjoiZjA1YmM1OTMtNjU4Mi00MDY1LTkwYTYtMWNkNDZhNzJjZjNkIiwiZW1haWwiOiJkdW5lc2thMUBtaWFsLnJ1IiwicGFzc3dvcmQiOiJoemh6aHpoemgifSwiZXhwIjoxNjUwODMyNzUwLCJpc3MiOiJ1c2VyLnNlcnZpY2UifQ.ofk2RRu0BwebsavAQjZFFatCK9OXiQFg048l-r_GCUg
+content-type: application/json
+
+{
+    "path" : "/sonne"
+}

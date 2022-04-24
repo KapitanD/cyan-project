@@ -8,5 +8,6 @@ protogen:
 build: protogen
 	CGO_ENABLED=0 go build -o ./build/rest-api-server -v ./cmd/rest-api-server
 	CGO_ENABLED=0 go build -o ./build/grpc-user-server -v ./cmd/grpc-user-server
+	CGO_ENABLED=0 go build -o ./build/grpc-container-server -v ./cmd/grpc-container-server
 
 .DEFAULT_GOAL := build
