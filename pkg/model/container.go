@@ -1,8 +1,6 @@
 package model
 
 import (
-	"log"
-
 	v1 "github.com/KapitanD/cyan-project/cyan-api/proto/v1"
 )
 
@@ -22,7 +20,6 @@ func MarshallContainer(cont *Container) *v1.Container {
 }
 
 func UnmarshalContainer(cont *v1.Container) *Container {
-	log.Printf("v1.Container: %v", cont)
 	return &Container{
 		Name:   cont.Name,
 		Meta:   cont.MetaData,
