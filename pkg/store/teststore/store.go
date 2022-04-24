@@ -5,15 +5,19 @@ import (
 	"github.com/KapitanD/cyan-project/pkg/store"
 )
 
-type Store struct {
+type UserStore struct {
 	userRepository *UserRepository
 }
 
-func New() *Store {
-	return &Store{}
+type ContainerStore struct {
+	containerRepository *ContainerRepository
 }
 
-func (s *Store) User() store.UserRepository {
+func NewUserStore() *UserStore {
+	return &UserStore{}
+}
+
+func (s *UserStore) User() store.UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository
 	}
@@ -24,4 +28,21 @@ func (s *Store) User() store.UserRepository {
 	}
 
 	return s.userRepository
+}
+
+func NewContainerStore() *ContainerStore {
+	return &ContainerStore{}
+}
+
+func (s *ContainerStore) Container() store.ContainerRepository {
+	if s.containerRepository != nil {
+		return s.containerRepository
+	}
+
+	s.containerRepository = &ContainerRepository{
+		store: s,
+		trees: make(map[string]*containerNode),
+	}
+
+	return s.containerRepository
 }
