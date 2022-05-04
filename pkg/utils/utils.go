@@ -8,15 +8,20 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+var (
+	EmptyMetaErr     = errors.New("empty metadata")
+	InvalidValLenErr = errors.New("invalid len of key value")
+)
+
 func UnaryValueFromMetadata(ctx context.Context, key constants.MdKey) (string, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return "", errors.New("empty metadata")
+		return "", EmptyMetaErr
 	}
 
 	mdValue := md.Get(string(key))
 	if len(mdValue) != 1 {
-		return "", errors.New("invalid len of email value")
+		return "", InvalidValLenErr
 	}
 
 	return mdValue[0], nil
