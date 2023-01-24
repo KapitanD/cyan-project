@@ -55,3 +55,14 @@
 ./build/grpc-container-server -port 10052 &
 ./build/rest-api-server
 ```
+
+## Дизайн пользовательского веб интерфейса
+
+### Login page
+![login](img/login.jpg)
+
+### Signup page
+![signup](img/signup.jpg)
+
+### Main page
+![main](img/main.jpg)
