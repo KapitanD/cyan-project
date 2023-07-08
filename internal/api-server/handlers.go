@@ -172,7 +172,10 @@ func (s *apiserver) error(w http.ResponseWriter, r *http.Request, code int, err 
 func (s *apiserver) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
 	w.WriteHeader(code)
 	if data != nil {
-		json.NewEncoder(w).Encode(data)
+		err := json.NewEncoder(w).Encode(data)
+		if err != nil {
+			w.Write([]byte("can not encode response"))
+		}
 	}
 }
 
