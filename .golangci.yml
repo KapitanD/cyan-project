@@ -1,0 +1,15 @@
+run:
+  skip-dirs:
+    - genproto
+  skip-files:
+    - "_mock.go"
+linters-settings:
+  gosimple:
+    go: "${GO_VERSION}"
+  staticcheck:
+    go: "${GO_VERSION}"
+  stylecheck:
+    go: "${GO_VERSION}"
+linters:
+  disable:
+      - wsl

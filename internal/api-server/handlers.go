@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	v1 "github.com/KapitanD/cyan-project/cyan-api/proto/v1"
 	"github.com/KapitanD/cyan-project/internal/constants"
 	"google.golang.org/grpc/metadata"
@@ -174,7 +176,7 @@ func (s *apiserver) respond(w http.ResponseWriter, r *http.Request, code int, da
 	if data != nil {
 		err := json.NewEncoder(w).Encode(data)
 		if err != nil {
-			w.Write([]byte("can not encode response"))
+			log.Err(err).Msgf("can not encode data")
 		}
 	}
 }
